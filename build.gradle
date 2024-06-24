@@ -65,17 +65,11 @@ def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
 
 ext {
-    isReleaseVersion = !sbeVersion.endsWith('-SNAPSHOT')
-    releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-    snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
-
-    if (!project.hasProperty('ossrhUsername')) {
-        ossrhUsername = ''
-    }
-
-    if (!project.hasProperty('ossrhPassword')) {
-        ossrhPassword = ''
-    }
+    isReleaseVersion = true
+    releasesRepoUrl = 'http://localhost:8081/artifactory/test-maven-repo'
+    snapshotsRepoUrl = 'http://localhost:8081/artifactory/test-maven-repo'
+    ossrhUsername = 'admin'
+    ossrhPassword = 'password'
 }
 
 def projectPom = {
@@ -324,16 +318,22 @@ project(':sbe-tool') {
 
         repositories {
             maven {
-                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
+                url = 'http://localhost:8081/artifactory/test-maven-repo/'
+                allowInsecureProtocol = true
                 credentials {
-                    username = ossrhUsername
-                    password = ossrhPassword
+                    username = 'admin'
+                    password = 'password'
                 }
             }
         }
     }
 
     signing {
+        def signingKey = findProperty("signingKey")
+        def signingPassword = findProperty("signingPassword")
+        if (signingKey != null) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+        }
         sign publishing.publications.sbe
     }
 }
@@ -391,16 +391,22 @@ project(':sbe-all') {
         }
         repositories {
             maven {
-                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
+                url = 'http://localhost:8081/artifactory/test-maven-repo/'
+                allowInsecureProtocol = true
                 credentials {
-                    username = ossrhUsername
-                    password = ossrhPassword
+                    username = 'admin'
+                    password = 'password'
                 }
             }
         }
     }
 
     signing {
+        def signingKey = findProperty("signingKey")
+        def signingPassword = findProperty("signingPassword")
+        if (signingKey != null) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+        }
         sign publishing.publications.sbeAll
     }
 }
@@ -504,16 +510,22 @@ project(':sbe-samples') {
 
         repositories {
             maven {
-                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
+                url = 'http://localhost:8081/artifactory/test-maven-repo/'
+                allowInsecureProtocol = true
                 credentials {
-                    username = ossrhUsername
-                    password = ossrhPassword
+                    username = 'admin'
+                    password = 'password'
                 }
             }
         }
     }
 
     signing {
+        def signingKey = findProperty("signingKey")
+        def signingPassword = findProperty("signingPassword")
+        if (signingKey != null) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+        }
         sign publishing.publications.sbeSamples
     }
 }
